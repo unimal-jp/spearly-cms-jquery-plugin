@@ -3,10 +3,10 @@ const TerserPlugin = require('terser-webpack-plugin')
 const webpack = require('webpack')
 
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   entry: './src/spearly-plugin.js',
   output: {
-    path: path.resolve(__dirname, './playground/js'),
+    path: path.resolve(__dirname, './dist'),
     filename: 'spearly-plugin.js',
   },
   module: {

@@ -1,17 +1,21 @@
 {
-  "name": "spearly-cms-jquery-plugin",
+  "name": "@spearly/jquery-plugin",
   "version": "1.0.0",
-  "description": "\"This package allows to easily implement Spearly in your jQuery codes!\"",
-  "main": "index.js",
+  "description": "This package allows to easily implement Spearly in your jQuery codes!",
+  "main": "dist/spearly-plugin.js",
+  "files": ["dist"],
   "scripts": {
-    "build:dev": "webpack --mode development",
-    "build:prod": "webpack --mode production",
+    "build:dev": "webpack --config webpack.config.js",
+    "build:prod": "webpack --config webpack.prod.js",
     "start:playground": "browser-sync start --config bs-config.js",
-    "dev": "webpack --mode development --watch & npm run start:playground"
+    "dev": "webpack --config webpack.config.js --watch & npm run start:playground"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/unimal-jp/spearly-cms-jquery-plugin.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   },
   "author": "",
   "license": "Apache-2.0",
