@@ -6,6 +6,33 @@ his package allows to easily implement Spearly in your jQuery codes!
 
 ### Load
 
+#### Use npm or Yarn and webpack
+
+1. Install with the following command:
+   ```
+   // npm
+   $ npm i -S @spearly/jquery-plugin
+   
+   // yarn
+   $ yarn add @spearly/jquery-plugin
+   ```
+2. Add the following to `webpack.config.js`:
+   ```js
+   ...
+   plugins: [
+     new webpack.ProvidePlugin({
+       $: 'jquery',
+       jQuery: 'jquery',
+       'window.jQuery': 'jquery',
+     }),
+   ],
+   ...
+   ```
+3. Add an import statement to your js file.
+   ```js
+   import '@spearly/jquery-plugin'
+   ```
+
 #### Use CDN
 
 Put the following code under the jQuery script tag.
