@@ -5,6 +5,11 @@ import '@babel/polyfill'
     return text.replace(/_./g, snakeToUpper)
   }
 
+  const camelToSnake = (text) => {
+    const upperToSnake = (str) => `_${str.charAt(0).toLowerCase()}`
+    return text.replace(/[A-Z]/g, upperToSnake).replace(/^_(.+?)$/, '$1')
+  }
+
   const recursiveToCamels = (data) => {
     if (!data || typeof data !== 'object') return data
     if (data instanceof Date || data instanceof RegExp) return data
@@ -74,22 +79,66 @@ import '@babel/polyfill'
       return recursiveToCamels(response)
     }
 
+    const mapList = (list) => ({
+      ...list,
+      data: list.data.map((content) => mapContent(content)),
+    })
+
+    const mapContent = (content) => {
+      const values = content.values
+      const fields = content.attributes.fields.data.map((field) => {
+        if (field.attributes.inputType !== 'calendar') return field
+        const date = new Date(field.attributes.value)
+        values[field.attributes.identifier] = date
+        return {
+          ...field,
+          value: date,
+        }
+      })
+
+      return {
+        ...content,
+        values,
+        attributes: {
+          ...content.attributes,
+          fields: {
+            data: fields,
+          },
+          createdAt: new Date(content.attributes.createdAt),
+          updatedAt: new Date(content.attributes.updatedAt),
+          publishedAt: content.attributes.publishedAt ? new Date(content.attributes.publishedAt) : null,
+        },
+      }
+    }
+
+    const mapForm = (form) => ({
+      ...form,
+      startedAt: form.startedAt ? new Date(form.startedAt) : null,
+      endedAt: form.endedAt ? new Date(form.endedAt) : null,
+      createdAt: new Date(form.createdAt),
+    })
+
+    const mapFormAnswer = (formAnswer) => ({
+      ...formAnswer,
+      createdAt: new Date(formAnswer.createdAt),
+    })
+
     $.spearly = {
       getList: async (contentTypeId, params) => {
         const response = await getRequest(`/content_types/${contentTypeId}/contents`, bindQueriesFromParams(params))
-        return response
+        return mapList(response)
       },
       getContent: async (contentId) => {
         const response = await getRequest(`/contents/${contentId}`)
-        return response.data
+        return mapContent(response.data)
       },
       getContentPreview: async (contentId, previewToken) => {
         const response = await getRequest(`/contents/${contentId}`, `?preview_token=${previewToken}`)
-        return response.data
+        return mapContent(response.data)
       },
       getFormLatest: async (publicUid) => {
         const response = await getRequest(`/forms/${publicUid}/latest`)
-        return response.form
+        return mapForm(response.form)
       },
       postFormAnswer: async (formVersionId, fields) => {
         if (!('_spearly_gotcha' in fields)) throw new Error('Include "_spearly_gotcha" in the fields.')
@@ -99,7 +148,7 @@ import '@babel/polyfill'
           fields: paramFields,
           _spearly_gotcha,
         })
-        return response.answer
+        return mapFormAnswer(response.answer)
       },
     }
   }
