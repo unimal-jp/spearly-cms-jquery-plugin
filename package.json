@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "This package allows to easily implement Spearly in your jQuery codes!",
   "main": "dist/spearly-plugin.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build:dev": "webpack --config webpack.config.js",
     "build:prod": "webpack --config webpack.prod.js",
+    "test": "jest",
     "start:playground": "browser-sync start --config bs-config.js",
     "dev": "webpack --config webpack.config.js --watch & npm run start:playground"
   },
@@ -27,12 +30,14 @@
     "@babel/core": "^7.17.9",
     "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "^7.16.11",
+    "babel-jest": "^27.5.1",
     "babel-loader": "^8.2.4",
     "browser-sync": "^2.27.9",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^27.5.1",
     "prettier": "^2.6.2",
     "terser-webpack-plugin": "^5.3.1",
     "webpack": "^5.72.0",
