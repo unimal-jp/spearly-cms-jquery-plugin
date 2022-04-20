@@ -2,6 +2,8 @@
 
 his package allows to easily implement Spearly in your jQuery codes!
 
+[![spec test](https://github.com/unimal-jp/spearly-cms-jquery-plugin/actions/workflows/test.yml/badge.svg)](https://github.com/unimal-jp/spearly-cms-jquery-plugin/actions/workflows/test.yml)
+
 ## Getting Started
 
 ### Load
