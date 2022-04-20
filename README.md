@@ -39,7 +39,7 @@ Put the following code under the jQuery script tag.
 
 ```html
 <script src="/jquery.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@spearly/jquery-plugin@1.0.0/dist/spearly-plugin.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@spearly/jquery-plugin/dist/spearly-plugin.js" defer></script>
 ```
 
 ## How to Use
