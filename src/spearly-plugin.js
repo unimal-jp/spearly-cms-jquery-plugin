@@ -43,6 +43,28 @@ import '@babel/polyfill'
         const month = String(params[paramName].getMonth() + 1)
         const date = String(params[paramName].getDate())
         queries += `${snakeName}=${year}-${month.padStart(2, '0')}-${date.padStart(2, '0')}&`
+      } else if (paramName === 'orders') {
+        const orders = params[paramName]
+        Object.keys(orders).forEach((key) => {
+          queries += `order_by_${key}=${orders[key]}&`
+        })
+      } else if (paramName === 'filterValue' && params[paramName] && params[paramName] instanceof Array) {
+        const param = params[paramName]
+        param.forEach((v) => {
+          queries += `filter_value[]=${v}&`
+        })
+      } else if (paramName === 'filters') {
+        const group = params[paramName]
+
+        Object.keys(group).forEach((fieldId) => {
+          if (group[fieldId] instanceof Array) {
+            group[fieldId].forEach((v) => {
+              queries += `filter_by_${fieldId}[]=${v}&`
+            })
+          } else {
+            queries += `filter_by_${fieldId}=${group[fieldId]}&`
+          }
+        })
       } else {
         queries += `${snakeName}=${params[paramName]}&`
       }
