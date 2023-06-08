@@ -2,6 +2,7 @@ export const serverContent = {
   attributes: {
     contentAlias: 'content_1',
     createdAt: '2021-08-01 00:00:00',
+    patternName: 'b',
     fields: {
       data: [
         {
@@ -45,6 +46,7 @@ export const content = {
   attributes: {
     contentAlias: 'content_1',
     createdAt: new Date('2021-08-01 00:00:00'),
+    patternName: 'b',
     fields: {
       data: [
         {
