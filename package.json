@@ -1,6 +1,6 @@
 {
   "name": "@spearly/jquery-plugin",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "This package allows to easily implement Spearly in your jQuery codes!",
   "main": "dist/spearly-plugin.js",
   "files": [
