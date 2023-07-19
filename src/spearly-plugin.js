@@ -95,7 +95,6 @@ import { nanoid } from 'nanoid'
         url: `https://api.spearly.com${endpoint}${queries}`,
         type: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           Accept: 'application/vnd.spearly.v2+json',
           Authorization: `Bearer ${apiKey}`,
         },
@@ -283,7 +282,6 @@ import { nanoid } from 'nanoid'
   const initialized = (options) => {
     setSpearlyAPIClient(options)
     setSpearlyAnalytics()
-    console.log($.spearly)
   }
 
   $.spearly = {
