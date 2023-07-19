@@ -74,20 +74,32 @@ async function() {
 - `limit` (number, 10)
 - `offset` (number, 0)
 - `order` ('desc' | 'asc', 'desc')
-- `order_by` ('latest' | 'popular' | string)
-- `filter_by` (string)
-- `filter_value` (string)
-- `filter_ref` (string)
-- `range_to` (string)
-- `range_from` (string)
+- `orderBy` ('latest' | 'popular' | string)
+- `filterBy` (string)
+- `filterValue` (string)
+- `filterRef` (string)
+- `rangeTo` (string)
+- `rangeFrom` (string)
+- `distinctId` (string)
+- `sessionId` (string)
+- `patternName` ('a' | 'b')
 
 ### Get Content
 
 ```js
 async function() {
+  // basic
   const content = await $.spearly.getContent(CONTENT_ID)
+
+  // when using some options
+  const optionalContent = await $.spearly.getContent(CONTENT_ID, { distinctId: DISTINCT_ID })
 }
 ```
+
+#### Options
+
+- `distinctId` (string)
+- `patternName` ('a' | 'b')
 
 ### Get Content Preview
 
@@ -129,3 +141,31 @@ async function() {
   ```
 - `_spearly_gotcha` is an anti-spam field. Be sure to add it to YOUR_FORM_FIELD_ANSWERS.  
   Don't forget to install it in an invisible field on your form.
+
+### A/B Testing analytics
+
+#### Page view
+
+If you are using A/B testing, you can run the following code on page load to count impressions.
+
+```js
+const content = await $.spearly.getContent(CONTENT_ID)
+$.spearly.pageView({
+  patternName: content.attributes.patternName,
+  contentId: content.id,
+})
+```
+
+#### Conversion
+
+If you are using A/B testing, you can count conversions by using the conversion method as follows
+
+```js
+const content = await $.spearly.getContent(CONTENT_ID)
+$('#submit').on('submit', () => {
+  $.spearly.conversion({
+    patternName: content.attributes.patternName,
+    contentId: content.id,
+  })
+});
+```

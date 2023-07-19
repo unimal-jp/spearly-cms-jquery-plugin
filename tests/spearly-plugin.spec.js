@@ -10,6 +10,10 @@ import {
   formAnswer,
 } from './mocks'
 
+jest.mock('nanoid', () => {
+  return { nanoid: () => 'identifier' }
+})
+
 describe('spearly jQuery plugin', () => {
   it('Before initialize, only init exists', () => {
     expect($.spearly.init).toBeTruthy()
@@ -24,6 +28,11 @@ describe('spearly jQuery plugin', () => {
     expect($.spearly.getContentPreview).toBeTruthy()
     expect($.spearly.getFormLatest).toBeTruthy()
     expect($.spearly.postFormAnswer).toBeTruthy()
+    expect($.spearly.postMetric).toBeTruthy()
+    expect($.spearly.pageView).toBeTruthy()
+    expect($.spearly.conversion).toBeTruthy()
+    expect($.spearly.distinctId).toBeTruthy()
+    expect($.spearly.sessionId).toBeTruthy()
   })
 
   it('getList is a list of content_type can be obtained', async () => {
@@ -69,6 +78,20 @@ describe('spearly jQuery plugin', () => {
 
     const res = await $.spearly.getFormLatest('publicUid')
     expect(res).toEqual(latestForm)
+  })
+
+  it('pageView can post metric data', () => {
+    $.ajax = jest.fn()
+
+    $.spearly.pageView({ contentId: 'CONTENT_ID', patternName: 'b' })
+    expect($.ajax).toHaveBeenCalled()
+  })
+
+  it('conversion can post metric data', () => {
+    $.ajax = jest.fn()
+
+    $.spearly.conversion({ contentId: 'CONTENT_ID', patternName: 'b' })
+    expect($.ajax).toHaveBeenCalled()
   })
 
   describe('postFormAnswer', () => {

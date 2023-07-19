@@ -1,4 +1,5 @@
 import '@babel/polyfill'
+import { nanoid } from 'nanoid'
 ;(function ($) {
   const snakeToCamel = (text) => {
     const snakeToUpper = (str) => str.charAt(1).toUpperCase()
@@ -28,7 +29,7 @@ import '@babel/polyfill'
     return returns
   }
 
-  const bindQueriesFromParams = (params) => {
+  const toListParams = (params) => {
     if (!params) return ''
     let queries = '?'
 
@@ -73,13 +74,27 @@ import '@babel/polyfill'
     return queries.slice(0, -1)
   }
 
+  const toContentParams = (params) => {
+    if (!params) return ''
+    let queries = '?'
+
+    if (params.distinctId) {
+      queries += `distinct_id=${params.distinctId}&`
+    }
+
+    if (params.patternName) {
+      queries += `pattern_name=${params.patternName}&`
+    }
+
+    return queries.slice(0, -1)
+  }
+
   const setSpearlyAPIClient = ({ apiKey }) => {
     const getRequest = async (endpoint, queries = '') => {
       const response = await $.ajax({
         url: `https://api.spearly.com${endpoint}${queries}`,
         type: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           Accept: 'application/vnd.spearly.v2+json',
           Authorization: `Bearer ${apiKey}`,
         },
@@ -96,6 +111,7 @@ import '@babel/polyfill'
           Accept: 'application/vnd.spearly.v2+json',
           Authorization: `Bearer ${apiKey}`,
         },
+        dataType: 'json',
         data: JSON.stringify(params),
       })
       return recursiveToCamels(response)
@@ -146,12 +162,15 @@ import '@babel/polyfill'
     })
 
     $.spearly = {
-      getList: async (contentTypeId, params) => {
-        const response = await getRequest(`/content_types/${contentTypeId}/contents`, bindQueriesFromParams(params))
+      getList: async (contentTypeId, params = {}) => {
+        params.distinctId = params.distinctId || $.spearly.distinctId
+        const response = await getRequest(`/content_types/${contentTypeId}/contents`, toListParams(params))
         return mapList(response)
       },
-      getContent: async (contentId) => {
-        const response = await getRequest(`/contents/${contentId}`)
+      getContent: async (contentId, params = {}) => {
+        params.distinctId = params.distinctId || $.spearly.distinctId
+        const response = await getRequest(`/contents/${contentId}`, toContentParams(params))
+
         return mapContent(response.data)
       },
       getContentPreview: async (contentId, previewToken) => {
@@ -175,7 +194,97 @@ import '@babel/polyfill'
     }
   }
 
+  const setSpearlyAnalytics = () => {
+    let distinctId = ''
+    let sessionId = ''
+
+    const postMetric = async (data) => {
+      const body = {
+        metric: {
+          name: data.name,
+          properties: {
+            resource_type: 'content',
+            resource_id: data.contentId,
+            pattern_name: data.patternName,
+            value: data.value,
+            distinct_id: data.distinctId,
+            session_id: data.sessionId,
+            session_id_expires_in: data.sessionIdExpiresIn,
+          },
+        },
+      }
+
+      return await $.ajax({
+        url: `https://analytics.spearly.com/metrics`,
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        data: JSON.stringify(body),
+      })
+    }
+
+    const pageView = async (params) => {
+      const sessionExpires = params.expires || 1800
+      distinctId = setDistinctId()
+      sessionId = setSessionId(sessionExpires)
+
+      await postMetric({
+        name: 'impressions',
+        contentId: params.contentId,
+        patternName: params.patternName,
+        value: 1,
+        distinctId,
+        sessionId,
+        sessionIdExpiresIn: sessionExpires,
+      })
+    }
+
+    const conversion = async (params) => {
+      distinctId = setDistinctId()
+
+      await postMetric({
+        name: 'conversions',
+        contentId: params.contentId,
+        patternName: params.patternName,
+        value: 1,
+        distinctId,
+      })
+    }
+
+    const setDistinctId = () => {
+      const distinctId =
+        document.cookie.replace(/(?:(?:^|.*;\s*)spearly_distinct_id\s*\=\s*([^;]*).*$)|^.*$/, '$1') || nanoid()
+      const distinctIdExpires = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toUTCString()
+      document.cookie = `spearly_distinct_id=${distinctId}; expires=${distinctIdExpires}; path=/`
+      return distinctId
+    }
+
+    const setSessionId = (expires = 1800) => {
+      const sessionId =
+        document.cookie.replace(/(?:(?:^|.*;\s*)spearly_session_id\s*\=\s*([^;]*).*$)|^.*$/, '$1') || nanoid()
+      const sessionIdExpires = new Date(Date.now() + expires * 1000).toUTCString()
+      document.cookie = `spearly_session_id=${sessionId}; expires=${sessionIdExpires};`
+      return sessionId
+    }
+
+    distinctId = setDistinctId()
+    sessionId = setSessionId()
+
+    $.spearly = Object.assign({}, $.spearly, {
+      postMetric,
+      distinctId,
+      sessionId,
+      pageView,
+      conversion,
+    })
+  }
+
+  const initialized = (options) => {
+    setSpearlyAPIClient(options)
+    setSpearlyAnalytics()
+  }
+
   $.spearly = {
-    init: setSpearlyAPIClient,
+    init: initialized,
   }
 })(jQuery, window, document)
