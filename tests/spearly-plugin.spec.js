@@ -49,7 +49,7 @@ describe('spearly jQuery plugin', () => {
       return Promise.resolve({ data: serverContent })
     })
 
-    const res = await $.spearly.getContent('contentID')
+    const res = await $.spearly.getContent('contentTypeId', 'contentID')
     expect(res).toEqual(content)
   })
 
@@ -58,7 +58,7 @@ describe('spearly jQuery plugin', () => {
       return Promise.resolve({ data: serverContent })
     })
 
-    const res = await $.spearly.getContent('contentID')
+    const res = await $.spearly.getContent('contentTypeId', 'contentID')
     expect(res).toEqual(content)
   })
 
@@ -67,7 +67,7 @@ describe('spearly jQuery plugin', () => {
       return Promise.resolve({ data: serverContent })
     })
 
-    const res = await $.spearly.getContentPreview('contentID', 'previewToken')
+    const res = await $.spearly.getContentPreview('contentTypeId', 'contentID', 'previewToken')
     expect(res).toEqual(content)
   })
 

@@ -167,14 +167,20 @@ import { nanoid } from 'nanoid'
         const response = await getRequest(`/content_types/${contentTypeId}/contents`, toListParams(params))
         return mapList(response)
       },
-      getContent: async (contentId, params = {}) => {
+      getContent: async (contentTypeId, contentId, params = {}) => {
         params.distinctId = params.distinctId || $.spearly.distinctId
-        const response = await getRequest(`/contents/${contentId}`, toContentParams(params))
+        const response = await getRequest(
+          `/content_types/${contentTypeId}/contents/${contentId}`,
+          toContentParams(params)
+        )
 
         return mapContent(response.data)
       },
-      getContentPreview: async (contentId, previewToken) => {
-        const response = await getRequest(`/contents/${contentId}`, `?preview_token=${previewToken}`)
+      getContentPreview: async (contentTypeId, contentId, previewToken) => {
+        const response = await getRequest(
+          `/content_types/${contentTypeId}/contents/${contentId}`,
+          `?preview_token=${previewToken}`
+        )
         return mapContent(response.data)
       },
       getFormLatest: async (publicUid) => {

@@ -89,10 +89,10 @@ async function() {
 ```js
 async function() {
   // basic
-  const content = await $.spearly.getContent(CONTENT_ID)
+  const content = await $.spearly.getContent(CONTENT_TYPE_ID, CONTENT_ID)
 
   // when using some options
-  const optionalContent = await $.spearly.getContent(CONTENT_ID, { distinctId: DISTINCT_ID })
+  const optionalContent = await $.spearly.getContent(CONTENT_TYPE_ID, CONTENT_ID, { distinctId: DISTINCT_ID })
 }
 ```
 
@@ -105,7 +105,7 @@ async function() {
 
 ```js
 async function() {
-  const content = await $.spearly.getContentPreview(CONTENT_ID, PREVIEW_TOKEN)
+  const content = await $.spearly.getContentPreview(CONTENT_TYPE_ID, CONTENT_ID, PREVIEW_TOKEN)
 }
 ```
 
